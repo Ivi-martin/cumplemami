@@ -77,14 +77,14 @@ function go(key){S('aviso recibido: '+key);S('aviso recibido: '+key);key=(key||'
 ['lucia','julia','laura','hijas','martin','carta'].forEach(function(k){load(k).catch(function(){})});
 var pvid=null,pOn=false;
 function hideP(){var p=document.getElementById('pv');if(p)p.style.display='none';pOn=false;if(pvid)try{pvid.pause()}catch(e){}}
-function prep(){if(pOn)return;var v=pvid=document.getElementById('pvid');if(!v.getAttribute('src'))v.src='pongo.mp4#t=0.1';
+function prep(){if(pOn)return;var v=pvid=document.getElementById('pvid');if(!v.querySelector('source')){v.innerHTML='<source src="pongo.mp4#t=0.1" type="video/mp4"><source src="pongo.webm#t=0.1" type="video/webm">';v.load();v.addEventListener('error',function(){S('vídeo: '+(v.error?'error '+v.error.code:'no se pudo cargar un formato'))},true);v.onloadeddata=function(){S('vídeo listo')};v.onplaying=function(){S('reproduciendo')}}
  document.getElementById('show').style.display='none';document.getElementById('wait').style.display='none';
  document.documentElement.style.setProperty('--a','#c9772b');document.documentElement.style.setProperty('--b','#fff0d9');
  document.getElementById('pc').textContent='🐾 Un mensaje muy especial 🐾';document.getElementById('pv').style.display='flex';pOn=true;
  v.onended=function(){document.getElementById('pc').textContent='🐾 ❤️ 🐾'};
- document.getElementById('pv').onclick=function(){if(v.paused){document.getElementById('pc').textContent='';v.muted=false;v.play()}else v.pause()}}
+ document.getElementById('pv').onclick=function(){if(v.paused){document.getElementById('pc').textContent='';v.muted=false;v.play()}else if(v.muted){v.muted=false;document.getElementById('pc').textContent=''}else v.pause()}}
 function playP(){prep();var v=document.getElementById('pvid');v.muted=false;v.currentTime=0;document.getElementById('pc').textContent='';
- var r=v.play();if(r&&r.catch)r.catch(function(){document.getElementById('pc').textContent='Haz clic en la pantalla para reproducir ▶'})}
+ var r=v.play();if(r&&r.catch)r.catch(function(){v.muted=true;var r2=v.play();if(r2&&r2.then)r2.then(function(){document.getElementById('pc').textContent='🔇 Haz clic en la pantalla para activar el sonido'},function(){document.getElementById('pc').textContent='Haz clic en la pantalla para reproducir ▶'})})}
 function reset(){hideP();document.getElementById('show').style.display='none';document.getElementById('wait').style.display='flex';document.documentElement.style.setProperty('--a','#e8788f');document.documentElement.style.setProperty('--b','#fbe3da')}
 function conn(){var es;try{es=new EventSource('https://ntfy.sh/'+TOPIC+'/sse')}catch(e){setTimeout(conn,3000);return}
  es.onopen=function(){S('conectado');S('conectado');document.getElementById('dot').style.background='#6c6'};
